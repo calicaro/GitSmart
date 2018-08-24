@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.github.cloudomatic</groupId>
+  <artifactId>gitsmart</artifactId>
+  <version>0.9-SNAPSHOT</version>
+  <packaging>jar</packaging>
+  <name>GIT Tutorial</name>
+  <description>A simple GIT tutorial for non-Java programmers comfortable with a relational database and DDLs (here the Derby database)</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derby</artifactId>
+      <version>10.8.3.0</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <finalName>gitsmart</finalName>
+  </build>
+</project>

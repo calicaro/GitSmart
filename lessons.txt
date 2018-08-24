@@ -1,0 +1,60 @@
+Lesson 1) Review the DDL and create the databases using
+
+Lesson 2) You have received a memo from the registrar's office stating the following:
+
+  'Sup dude.  I think we might need ia new feature to start tracking where students are from.  Something about not having two students from the same hometown share the same dorm room.  Here's everyone's hometown:
+
+	George Harrison: Liverpool
+        John Lennon: Manchester
+        Ringo Starr: London
+        Paul McCartney: Liverpool
+
+		- Thanks,
+
+                  'Bro
+
+Create a new branch called "hometowns".  Add a hometown for each student in the DDL.  Validate that the new DDL runs, and that the database looks correct, and commit the change.  Checkout the "master" branch, merge the "hometown tracking" branch, and push the repository to GitHub. Validate that the change appears when you browse the repository in GitHub.
+
+Lesson 3) Check out the "hometowns" branch again.  Modify the roommate matching function to ensure two students from the same hometown are not sharing a room.  Commit the change and merge it into master, pushing the master brabranch to GitHub.  Tag this branch with the label "v1.1"
+
+Lesson 4) You receive the following memo from the Student Health office:
+
+
+	Dear IT Department,
+
+        It seems that a bad case of the Willies has been going around the English countryside.  We need to start tracking which students have the Willies immunization and which do not, and ensure that students who are not vaccinated are not allowed to share a room with another student.  These students should be quarantined in their own room(s).  Attached is a list of students and their immunization status:
+
+	Last Name          Immunized
+        -----------------------------------
+        Harrison           yes
+        Starr              yes
+        Lennon             no
+        McCartney          yes
+
+                Sincerely,
+
+                Dr Quack
+                Head of Student Health
+
+  You are able to update the DDL, (call this branch vaccination_feature) but before you can adjust the Java code to deal with the immunization problem, you get the following urgent message from Bro in the Registrar's Office:
+
+	Dude,
+
+	Urgent!  Mrs. Starr called, and says that little Ringo has an irrational fear of students with glasses.  Something about being afraid that the glasses can peer into his soul.  Apparently we need to start tracking who wears glasses now, as well has who has a fear of corrective lenses, and make sure that never the two shall meet.  The Dean of Students has already called the head of IT and said that you should stop whatever you're working on to address this, even if some of the students have to contract the Willies before fall classes start.  I've included the relevant data as an attachment.
+
+                - Bro
+
+
+         Last Name               Wears Glasses            Has Lensophobia
+         ---------------------------------------------------------------------------
+         Harrison                NO                       NO
+         Starr                   NO                       YES
+         Lennon                  YES                      NO
+         McCartney               NO                       NO
+
+   Commit your changes to the Willies feature branch, but don't merge it into master.  Start a new branch called "hotfix_phobias" and make the appropriate fix.    When the change has been entered and tested, commit, merge the branch into master, and push.
+
+   When complete, check out the Willies branch, merge master into it, finish the change, commit the Willies feature, merge into master, and push to GitHub.
+
+
+	
