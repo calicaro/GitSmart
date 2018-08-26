@@ -84,8 +84,8 @@ public class StudentMatch {
       }      
     }
 */
-    //sqlStatement.executeUpdate("DROP TABLE students");
-    sqlStatement.executeUpdate("CREATE TABLE students (student_id int primary key, last_name varchar(30), first_name varchar(30))");
+    //sqlStatement.executeUpdate("DROP TABLE STUDENTS");
+    sqlStatement.executeUpdate("CREATE TABLE STUDENTS (student_id int primary key, last_name varchar(30), first_name varchar(30))");
     sqlStatement.executeUpdate("INSERT INTO students values (1, 'McCartney', 'Paul'");
     sqlStatement.executeUpdate("INSERT INTO students values (2, 'Harrison', 'George'");
     sqlStatement.executeUpdate("INSERT INTO students values (3, 'Lennon', 'John'");

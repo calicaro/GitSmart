@@ -14,10 +14,16 @@
       <artifactId>derby</artifactId>
       <version>10.8.3.0</version>
     </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
-    <finalName>StudentMatch</finalName>
+    <!-- finalName>StudentMatch</finalName -->
     <plugins>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
@@ -28,8 +34,10 @@
             </manifest>
           </archive>
           <descriptorRefs>
-            <descriptorRef>jar-with-dependencies</descriptorRef>
-          </descriptorRefs>
+		  <descriptorRef>jar-with-dependencies</descriptorRef>
+	  </descriptorRefs>
+	  <finalName>StudentMatch</finalName>
+	  <appendAssemblyId>false</appendAssemblyId>
         </configuration>
         <executions>
           <execution>
