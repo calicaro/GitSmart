@@ -28,8 +28,8 @@ public class StudentMatch {
       else if ( (new String("--run-query")).equals(args[0]) ) {
         studentMatcher.runQuery(args[1]);
        }
-      else if ( (new String("--run-student-match")).equals(args[0]) ) {
-        studentMatcher.runStudentMatch();
+      else if ( (new String("--run-match")).equals(args[0]) ) {
+        studentMatcher.runRoommateMatch();
       }
     } catch (Exception e) {
       System.err.println("" + e);
@@ -52,7 +52,7 @@ public class StudentMatch {
   private Student[] getListOfAllStudents() throws java.sql.SQLException {
     java.sql.Connection databaseConnection = DriverManager.getConnection(databaseUrl);
     java.sql.Statement sqlStatement = databaseConnection.createStatement();
-    java.sql.ResultSet queryResultSet = sqlStatement.executeQuery("SELECT count(*) FROM students");
+    java.sql.ResultSet queryResultSet = sqlStatement.executeQuery("SELECT * FROM students");
     ResultSetMetaData resultSetMetaData = queryResultSet.getMetaData();
     List<Student> studentList = new ArrayList<Student>();
     while (queryResultSet.next()) {
@@ -73,68 +73,86 @@ public class StudentMatch {
     List<Room> roomList = new ArrayList<Room>();
     while (queryResultSet.next()) {
       Room room = new Room();
-      room.dormName = queryResultSet.getString(1);
-      room.roomNumber = queryResultSet.getInt(2);
-      room.capacity = queryResultSet.getInt(3);
+      room.roomId = queryResultSet.getInt(1);
+      room.dormName = queryResultSet.getString(2);
+      room.roomNumber = queryResultSet.getInt(3);
+      room.capacity = queryResultSet.getInt(4);
       roomList.add(room);
     }
     return roomList.toArray(new Room[roomList.size()]);
   }
 
-  public void runStudentMatch() throws java.sql.SQLException {
-    System.out.println("Running student match...");
+  public void runRoommateMatch() throws java.sql.SQLException {
+    System.out.println("StudentMatch.runRoommateMatch(): Running student match...");
 
 
     // Get an array of all students
+    System.out.println("StudentMatch.runRoommateMatch(): Retrieving list of all students...");
     Student[] allStudents = getListOfAllStudents();
-    System.out.println("StudentMatch.runStudentMatch(): Loading " + allStudents.length + " student records from the database");
+    System.out.println("StudentMatch.runRoommateMatch(): Retrieved " + allStudents.length + " student records from the database");
 
     // Get an array of all rooms
+    System.out.println("StudentMatch.runRoommateMatch(): Retrieving list of all available dorm rooms...");
     Room[] allRooms = getListOfAllRooms();
-    System.out.println("StudentMatch.runStudentMatch(): Loading " + allStudents.length + " dormitory room records from the database");
+    System.out.println("StudentMatch.runRoommateMatch(): Retrieved " + allStudents.length + " dormitory room records from the database");
     
     // Create an erray of results
     RoomAssignment[] roomAssignments = new RoomAssignment[allRooms.length];
-   
+    for (int iRoom = 0; iRoom < allRooms.length; iRoom++) {
+      roomAssignments[iRoom] = new RoomAssignment();
+      roomAssignments[iRoom].room = allRooms[iRoom];
+    }
+    
     int studentArrayPointer = 0;
 
     // For each room, assign students
-    for (int iRoom = 0; iRoom < roomAssignments.length; iRoom++) {
-      System.out.println("StudentMatch.runStudentMatch(): Assigning students to room " + roomAssignments[iRoom].dormName + " room #" + roomAssignments[iRoom].roomNumber + " (capacity " +  roomAssignments[iRoom].capacity + ")");
-      roomAssignments[iRoom].studentsCurrentlyAssigned = new int[allRooms[iRoom].capacity];
-      System.out.println("StudentMatch.runStudentMatch(): There are " +  roomAssignments[iRoom].studentsCurrentlyAssigned.length + " slots in this room that may be assigned ");
-      for (int iBed = 0; iBed < roomAssignments[iRoom].studentsCurrentlyAssigned.length; iBed++) {
-          roomAssignments[iRoom].studentsCurrentlyAssigned[iBed] = allStudents[studentArrayPointer].studentId;
-          System.out.println("StudentMatch.runStudentMatch(): Assigning slot " + iBed + " to student id # " + roomAssignments[iRoom].studentsCurrentlyAssigned[iBed]);
-          studentArrayPointer++;
+    for (RoomAssignment roomAssignment : roomAssignments) {
+      System.out.println("StudentMatch.runRoommateMatch(): Assigning students to room " + roomAssignment.room.dormName + " room #" + roomAssignment.room.roomNumber + " (capacity " +  roomAssignment.room.capacity + ")");
+      for (int iBed = 0; iBed < roomAssignment.room.capacity; iBed++) {
+          if (studentArrayPointer < allStudents.length ) {
+            Student student = allStudents[studentArrayPointer++];
+            if (roomAssignment.studentList == null)  roomAssignment.studentList = new ArrayList<Student>();
+            roomAssignment.studentList.add(student);
+            System.out.println("StudentMatch.runRoommateMatch(): Assigning slot " + iBed + " to " + student.lastName);
+          } else {
+            // No more students to assign
+          }
       }
     }
-      
+
     System.out.println("");
     System.out.println("List of room assignments for incoming students: ");
     System.out.println("-----------------------------------------------------------------");
-    for (int iRoom = 0; iRoom < roomAssignments.length; iRoom++) {
-      System.out.print(roomAssignments[iRoom].dormName + " #" + roomAssignments[iRoom].roomNumber + " ");
-      for (int iBed = 0; iBed < roomAssignments[iRoom].studentsCurrentlyAssigned.length; iBed++) {
-        System.out.print( roomAssignments[iRoom].studentsCurrentlyAssigned[iBed]  + ","  );
+    for (RoomAssignment assignedRoom : roomAssignments) {
+      System.out.print(assignedRoom.room.dormName + " room #" + assignedRoom.room.roomNumber + ": ");
+      if (assignedRoom.studentList == null) System.out.println("(empty)");
+      else {
+        for (Student student : assignedRoom.studentList) {
+          System.out.print(student.lastName + ", ");
+        }
+        System.out.println();
       }
-      System.out.println();
     }
+    System.out.println("\n\n");
+
+
   }
 
   public void runQuery(String sqlQuery) throws SQLException {
 
     // Get a connection to the GitUniversity database
-    System.out.println("GitSmart.dumpTables(): Connecting to the database....");
+    System.out.println("GitSmart.runQuery(): Connecting to the database....");
     java.sql.Connection databaseConnection = DriverManager.getConnection(databaseUrl);
 
     // Create a statement object
     java.sql.Statement sqlStatement = databaseConnection.createStatement();
 
     // Execute the query
+    System.out.println("GitSmart.runQuery(): Executing SQL query <" + sqlQuery + ">...");
     java.sql.ResultSet queryResultSet = sqlStatement.executeQuery(sqlQuery);
 
     // Determine the number of columns in the result set
+     System.out.println("GitSmart.runQuery(): Retrieving results......");
     ResultSetMetaData resultSetMetaData = queryResultSet.getMetaData();
     int resultSetColumnCount = resultSetMetaData.getColumnCount(); 
 
@@ -147,7 +165,7 @@ public class StudentMatch {
                          )
         );      
     }
-    System.out.println("\n-----------------------------------------------------------------------------------");
+    System.out.println("\n-----------------------------------------------------------------------------------------------------------------");
     
     // Parse the result set and print the values to stdout
     while (queryResultSet.next()) {

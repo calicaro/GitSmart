@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS students
 CREATE TABLE IF NOT EXISTS students (student_id int primary key, last_name varchar(30), first_name varchar(30))
 
 DROP TABLE IF EXISTS dormitory_rooms;
-CREATE TABLE IF NOT EXISTS dormitory_rooms (dormitory_name varchar(30) primary key, room_number int, capacity int);
+CREATE TABLE IF NOT EXISTS dormitory_rooms (room_id int primary key, dormitory_name varchar(30), room_number int, capacity int);
 
 # Populate the students table
 INSERT INTO students VALUES (1, 'McCartney', 'Paul');

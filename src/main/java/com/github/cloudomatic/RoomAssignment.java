@@ -1,8 +1,10 @@
 package com.github.cloudomatic.gitsmart;
 
+import java.util.List;
+
+
 public class RoomAssignment {
-  String dormName = "";
-  int roomNumber = 0;
-  int capacity = 0;
-  int[] studentsCurrentlyAssigned = null;
+  Room room;
+  List<Student> studentList = null;
+
 }

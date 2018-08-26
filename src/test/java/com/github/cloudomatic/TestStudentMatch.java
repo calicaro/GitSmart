@@ -21,6 +21,9 @@ public class TestStudentMatch {
     // Dump the students table
     studentMatcher.runQuery("SELECT * FROM students");
 
+    // Run the match algorithm
+    studentMatcher.runRoommateMatch();
+
     //Assert.assertEquals(output, "value");
 
   }
