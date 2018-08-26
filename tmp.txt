@@ -1,1 +1,0 @@
-http://shengwangi.blogspot.com/2015/10/how-to-use-embedded-java-db-derby-in-maven.html

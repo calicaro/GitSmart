@@ -1,15 +1,22 @@
 package com.github.cloudomatic.gitsmart;
-
+     
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.File;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.ResultSetMetaData;
+import java.util.ArrayList;
+import java.util.List;
 
 public class StudentMatch {
 
-  // A database in Derby, we'll call it "Git University"
-  String databaseUrl = "jdbc:derby:/tmp/git_university.db;create=true";
+  // A database in Derby to run the student match examples
+  String databaseFilename = "/tmp/university.db";
+  String databaseUrl = "jdbc:h2:" + databaseFilename;
 
   public static void main(String args[]) {
     try {
@@ -20,7 +27,7 @@ public class StudentMatch {
       } 
       else if ( (new String("--run-query")).equals(args[0]) ) {
         studentMatcher.runQuery(args[1]);
-      }
+       }
       else if ( (new String("--run-student-match")).equals(args[0]) ) {
         studentMatcher.runStudentMatch();
       }
@@ -42,54 +49,150 @@ public class StudentMatch {
     System.out.println("");
   }
 
-  public void runStudentMatch() {
+  private Student[] getListOfAllStudents() throws java.sql.SQLException {
+    java.sql.Connection databaseConnection = DriverManager.getConnection(databaseUrl);
+    java.sql.Statement sqlStatement = databaseConnection.createStatement();
+    java.sql.ResultSet queryResultSet = sqlStatement.executeQuery("SELECT count(*) FROM students");
+    ResultSetMetaData resultSetMetaData = queryResultSet.getMetaData();
+    List<Student> studentList = new ArrayList<Student>();
+    while (queryResultSet.next()) {
+      Student student = new Student();
+      student.studentId = queryResultSet.getInt(1);
+      student.lastName = queryResultSet.getString(2);
+      student.firstName = queryResultSet.getString(3);
+      studentList.add(student);
+    }
+    return studentList.toArray(new Student[studentList.size()]);
+  }
+
+  private Room[] getListOfAllRooms() throws java.sql.SQLException {
+    java.sql.Connection databaseConnection = DriverManager.getConnection(databaseUrl);
+    java.sql.Statement sqlStatement = databaseConnection.createStatement(); 
+    java.sql.ResultSet queryResultSet = sqlStatement.executeQuery("SELECT * FROM dormitory_rooms");
+    ResultSetMetaData resultSetMetaData = queryResultSet.getMetaData();
+    List<Room> roomList = new ArrayList<Room>();
+    while (queryResultSet.next()) {
+      Room room = new Room();
+      room.dormName = queryResultSet.getString(1);
+      room.roomNumber = queryResultSet.getInt(2);
+      room.capacity = queryResultSet.getInt(3);
+      roomList.add(room);
+    }
+    return roomList.toArray(new Room[roomList.size()]);
+  }
+
+  public void runStudentMatch() throws java.sql.SQLException {
     System.out.println("Running student match...");
+
+
+    // Get an array of all students
+    Student[] allStudents = getListOfAllStudents();
+    System.out.println("StudentMatch.runStudentMatch(): Loading " + allStudents.length + " student records from the database");
+
+    // Get an array of all rooms
+    Room[] allRooms = getListOfAllRooms();
+    System.out.println("StudentMatch.runStudentMatch(): Loading " + allStudents.length + " dormitory room records from the database");
+    
+    // Create an erray of results
+    RoomAssignment[] roomAssignments = new RoomAssignment[allRooms.length];
+   
+    int studentArrayPointer = 0;
+
+    // For each room, assign students
+    for (int iRoom = 0; iRoom < roomAssignments.length; iRoom++) {
+      System.out.println("StudentMatch.runStudentMatch(): Assigning students to room " + roomAssignments[iRoom].dormName + " room #" + roomAssignments[iRoom].roomNumber + " (capacity " +  roomAssignments[iRoom].capacity + ")");
+      roomAssignments[iRoom].studentsCurrentlyAssigned = new int[allRooms[iRoom].capacity];
+      System.out.println("StudentMatch.runStudentMatch(): There are " +  roomAssignments[iRoom].studentsCurrentlyAssigned.length + " slots in this room that may be assigned ");
+      for (int iBed = 0; iBed < roomAssignments[iRoom].studentsCurrentlyAssigned.length; iBed++) {
+          roomAssignments[iRoom].studentsCurrentlyAssigned[iBed] = allStudents[studentArrayPointer].studentId;
+          System.out.println("StudentMatch.runStudentMatch(): Assigning slot " + iBed + " to student id # " + roomAssignments[iRoom].studentsCurrentlyAssigned[iBed]);
+          studentArrayPointer++;
+      }
+    }
+      
     System.out.println("");
+    System.out.println("List of room assignments for incoming students: ");
+    System.out.println("-----------------------------------------------------------------");
+    for (int iRoom = 0; iRoom < roomAssignments.length; iRoom++) {
+      System.out.print(roomAssignments[iRoom].dormName + " #" + roomAssignments[iRoom].roomNumber + " ");
+      for (int iBed = 0; iBed < roomAssignments[iRoom].studentsCurrentlyAssigned.length; iBed++) {
+        System.out.print( roomAssignments[iRoom].studentsCurrentlyAssigned[iBed]  + ","  );
+      }
+      System.out.println();
+    }
   }
 
   public void runQuery(String sqlQuery) throws SQLException {
+
     // Get a connection to the GitUniversity database
     System.out.println("GitSmart.dumpTables(): Connecting to the database....");
     java.sql.Connection databaseConnection = DriverManager.getConnection(databaseUrl);
 
-    System.out.println("GitSmart.dumpTables(): Table [students] ::::::::::::::::::::::::::::::");
+    // Create a statement object
     java.sql.Statement sqlStatement = databaseConnection.createStatement();
-    java.sql.ResultSet queryResultSet = sqlStatement.executeQuery("SELECT * FROM students");
-    while (queryResultSet.next()) {
-      System.out.println(
-                  queryResultSet.getInt("student_id") + " " +
-                  queryResultSet.getString("last_name") + " " +
-                  queryResultSet.getString("first_name")
-      );
+
+    // Execute the query
+    java.sql.ResultSet queryResultSet = sqlStatement.executeQuery(sqlQuery);
+
+    // Determine the number of columns in the result set
+    ResultSetMetaData resultSetMetaData = queryResultSet.getMetaData();
+    int resultSetColumnCount = resultSetMetaData.getColumnCount(); 
+
+    // Print a header with column names
+    System.out.println("");
+    for (int i = 1; i <= resultSetColumnCount; i++) {
+        System.out.print(String.format(
+                                       "%1$-" + "30" + "s",
+                                       resultSetMetaData.getColumnName(i)
+                         )
+        );      
     }
+    System.out.println("\n-----------------------------------------------------------------------------------");
+    
+    // Parse the result set and print the values to stdout
+    while (queryResultSet.next()) {
+      for (int i = 1; i <= resultSetColumnCount; i++)  System.out.print(
+                                                                         String.format("%1$-" + "30" + "s",
+                                                                         queryResultSet.getString(i)
+                                                                        )  
+                                                       );
+      System.out.println("");
+
+    }
+    System.out.println("\n");
   }
 
   public void runDDL(String ddlFilename) throws SQLException {
 
-    // Get a connection to (or create) the GitUniversity database
-    java.sql.Connection databaseConnection = java.sql.DriverManager.getConnection(databaseUrl);
+    // Create the university database
+    java.sql.Connection databaseConnection = java.sql.DriverManager.getConnection(databaseUrl + ";create=true");
 
-
-    // Load the DDL containing all enrolled students
+    // Create a statement object
     java.sql.Statement sqlStatement = databaseConnection.createStatement();
 
-
-/*
-
+    // Locate the DDL file
+    System.out.println("StudentMatch.runDDL(): Loading <" + ddlFilename + ">...");
     Path path = Paths.get(ddlFilename);
-    try (BufferedReader ddlFileReader = Files.newBufferedReader(path, ENCODING)){
+
+    // Load the DDL file
+    try (BufferedReader ddlFileReader = Files.newBufferedReader(path)) {
       String line = null;
+
+      // Read each line from the file
       while ((line = ddlFileReader.readLine()) != null) {
-        if (! line.startsWith("#") ) sqlStatement.executeUpdate(line);
+        System.out.println("StudentMatch.runDDL(): " + line);
+
+        // If not a comment or empty string, run executeUpdate to execute the statement
+        if (
+             ! line.startsWith("#") &&
+             ! (new String("")).equals(line)
+          ) sqlStatement.executeUpdate(line);
       }      
+    } catch (IOException ioe) {
+      System.err.println("StudentMatch.runDDL(): Fatal error in loading or parsing DDL file <" + ddlFilename + ">");
+      return;
     }
-*/
-    //sqlStatement.executeUpdate("DROP TABLE STUDENTS");
-    sqlStatement.executeUpdate("CREATE TABLE STUDENTS (student_id int primary key, last_name varchar(30), first_name varchar(30))");
-    sqlStatement.executeUpdate("INSERT INTO students values (1, 'McCartney', 'Paul'");
-    sqlStatement.executeUpdate("INSERT INTO students values (2, 'Harrison', 'George'");
-    sqlStatement.executeUpdate("INSERT INTO students values (3, 'Lennon', 'John'");
-    sqlStatement.executeUpdate("INSERT INTO students values (4, 'Starr', 'Ringo'");
+   System.out.println("StudentMatch.runDDL(): DDL parsing complete");
   }
 
 }

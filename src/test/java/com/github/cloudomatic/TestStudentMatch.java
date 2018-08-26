@@ -17,6 +17,10 @@ public class TestStudentMatch {
     File file = new File(classLoader.getResource("university.ddl").getFile());
     System.out.println(file.getAbsolutePath());
     studentMatcher.runDDL(file.getAbsolutePath());
+
+    // Dump the students table
+    studentMatcher.runQuery("SELECT * FROM students");
+
     //Assert.assertEquals(output, "value");
 
   }

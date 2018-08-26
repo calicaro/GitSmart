@@ -8,11 +8,24 @@
   <name>GIT Tutorial</name>
   <description>A simple GIT tutorial for non-Java programmers comfortable with a relational database and DDLs (here the Derby database)</description>
 
+  <properties>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+  </properties>
+
   <dependencies>
+<!--
     <dependency>
       <groupId>org.apache.derby</groupId>
       <artifactId>derby</artifactId>
       <version>10.8.3.0</version>
+    </dependency>
+-->
+
+   <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <version>1.4.197</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
