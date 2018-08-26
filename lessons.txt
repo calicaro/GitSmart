@@ -1,8 +1,31 @@
-Lesson 1) Review the DDL and create the databases using
+You have inherited a program which executes a roommate matching program at a university.  The program is written in Java, uses the Derby database, and uses Git for source control.  You are expecte to respond to requests from different offices in the university and make feature updates to the program.  The program is intended to be as simple as possible, in the event that this tutorial is also an introduction to Java.  This tutorial is intended to be guided by an instructor who is familiar with the Git command line tool.
 
-Lesson 2) You have received a memo from the registrar's office stating the following:
+Create an account on GitHub and fork this repository to begin.
 
-  'Sup dude.  I think we might need ia new feature to start tracking where students are from.  Something about not having two students from the same hometown share the same dorm room.  Here's everyone's hometown:
+Lesson 1) Clone the GitSmart project and review the program source code (StudentMatch.java and univeristy.ddl) and build StudentMatch.jar with:
+
+		mvn clean install
+
+	Run the StudentMatch.jar file with:
+
+		java -jar ./target/StudentMatch.jar
+
+	You will see a list of options.  Run the DDL to create the database via:
+
+		java -jar ./target/StudentMatch.jar --run-ddl ./src/main/resources/university.ddl
+
+	and then run a SQL query to validate that the database was created, e.g.
+
+		java -jar ./target/StudentMatch.jar --run-query "SELECT * from students"
+
+   Note: Any resemblance to actual Beatles, living or dead, is entirely coincidental, and unintended.
+
+Lesson 2) You have received a memo from Bro in the registrar's office stating the following:
+
+ -----------------------------------------
+ Dude,
+
+   I think we might need a new feature to start tracking where students are from.  The Dean of Students says that two students from the same hometown should not share the same dorm room, so that the students learn about different parts of the country.  Here's everyone's hometown:
 
 	George Harrison: Liverpool
         John Lennon: Manchester
@@ -11,25 +34,29 @@ Lesson 2) You have received a memo from the registrar's office stating the follo
 
 		- Thanks,
 
-                  'Bro
+                  Bro'
+ -----------------------------------------
 
-Create a new branch called "hometowns".  Add a hometown for each student in the DDL.  Validate that the new DDL runs, and that the database looks correct, and commit the change.  Checkout the "master" branch, merge the "hometown tracking" branch, and push the repository to GitHub. Validate that the change appears when you browse the repository in GitHub.
+Create a new Git branch called "hometowns".  We will call this a "feature branch", because it represents a new feature to the program that we're working on.  Add a hometown for each student in the DDL.  Validate that the new DDL runs, and that the database looks correct, and commit the change.  Checkout the "master" branch, merge the "hometown tracking" branch, and push the repository to GitHub. Validate that the change appears when you browse the repository in GitHub.
 
-Lesson 3) Check out the "hometowns" branch again.  Modify the roommate matching function to ensure two students from the same hometown are not sharing a room.  Commit the change and merge it into master, pushing the master brabranch to GitHub.  Tag this branch with the label "v1.1"
+Lesson 3) Check out the "hometowns" branch again.  Modify the roommate matching function to ensure two students from the same hometown are not sharing a room.   
+
+    Hint:  If you wish to skip this step, use the source code provided at the end of this file.
+
+Test the change, commit the change on the "hometown" branch, and merge it into the "master" branch, pushing the master branch to GitHub.  
 
 Lesson 4) You receive the following memo from the Student Health office:
 
-
 	Dear IT Department,
 
-        It seems that a bad case of the Willies has been going around the English countryside.  We need to start tracking which students have the Willies immunization and which do not, and ensure that students who are not vaccinated are not allowed to share a room with another student.  These students should be quarantined in their own room(s).  Attached is a list of students and their immunization status:
+        It seems that a bad case of the Willies has been going around the English countryside.  We need to start tracking which students have the Willies immunization and which do not, and ensure that students who are not vaccinated are not allowed to share a room with another student.  These students should be quarantined in their own room(s).  This information is confidential, and should be put into a separate table.  Attached is a list of students and their immunization status:
 
-	Last Name          Immunized
+	Student ID          Immunized
         -----------------------------------
-        Harrison           yes
-        Starr              yes
-        Lennon             no
-        McCartney          yes
+        001                 yes
+        002                 yes
+        003                 no
+        004                 yes
 
                 Sincerely,
 
@@ -54,7 +81,8 @@ Lesson 4) You receive the following memo from the Student Health office:
 
    Commit your changes to the Willies feature branch, but don't merge it into master.  Start a new branch called "hotfix_phobias" and make the appropriate fix.    When the change has been entered and tested, commit, merge the branch into master, and push.
 
-   When complete, check out the Willies branch, merge master into it, finish the change, commit the Willies feature, merge into master, and push to GitHub.
+   When complete, check out the Willies branch, merge master into it, finish the change, commit the Willies feature, and merge into master.
 
+   Tag the master branch with this feature as "v1.1", then push to GitHub.
 
 	
