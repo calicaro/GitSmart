@@ -4,21 +4,21 @@ Create an account on GitHub and fork this repository to begin.
 
 Lesson 1) Clone a repository
 
-	Clone the GitSmart project and review the program source code (StudentMatch.java and univeristy.ddl) and build StudentMatch.jar with:
+Clone the GitSmart project and review the program source code (StudentMatch.java and univeristy.ddl) and build StudentMatch.jar with:
 
 		mvn clean install -DskipTests
 
-	Run the StudentMatch.jar file with:
+Run the StudentMatch.jar file with:
 
 		java -jar ./target/StudentMatch.jar
 
-	You will see a list of options.  Study these options and compare them to classes and methods in the src folder.  
+You will see a list of options.  Study these options and compare them to classes and methods in the src folder.  
 
-        Run the DDL to create the database via:
+ Run the DDL to create the database via:
 
 		java -jar ./target/StudentMatch.jar --run-ddl ./src/main/resources/university.ddl
 
-	and then run a SQL query to validate that the database was created, e.g.
+and then run a SQL query to validate that the database was created, e.g.
 
 		java -jar ./target/StudentMatch.jar --run-query "SELECT * from students"
 
@@ -78,7 +78,7 @@ Use:
 
 To see the commit history for master.  
 
-Lesson 4) (Optional) Adding to a feature branch
+Lesson 4) Adding to a feature branch
 
 Check out the feature branch again:
 
@@ -86,7 +86,7 @@ Check out the feature branch again:
 
 Modify the roommate matching function to ensure two students from the same hometown are not sharing a room.   
 
-    Hint:  If you wish to skip this step, use the source code provided in the "solutions" below.
+    Hint:  Create two List<Student> objects called "assigned" and "unassigned", and move students into the "assigned" list as they pass the hometown check.
 
 Test the change, commit the change on the "hometown_tracking" branch, and merge it into the "master" branch, pushing the master branch to GitHub.  
 
@@ -128,13 +128,22 @@ You receive the following memo from the Student Health office:
 
    Commit your changes to the Willies feature branch and push the branch to the remote repository, but don't merge it into master.  Start a new branch called "hotfix_phobias" and make the appropriate fix.    When the change has been entered and tested, commit, merge the branch into master, and push.
 
-   When complete, check out the Willies branch, merge master into it, finish the change, commit the Willies feature, and merge into master.  Note that depending on your team workflow, you should always merge "master" (or the current team development branch) into your feature branch before merging your change into master, to ensure that you have thoroughly tested everything while still working the feature/fix branch.
+   When complete, check out the Willies branch, merge master into it, finish the change, commit the Willies feature, and merge into master.  Note that depending on your team workflow, you should always merge "master" (or the current team development branch) into your feature branch before merging your changes back into the team branch, to ensure that you have thoroughly tested everything while still working the feature/fix branch.  By always "merging and testing" into your current feature branch, you won't "break the build" and interrupt the continuous integration workflow.
 
-   Tag the master branch with this feature as "v1.1", then push to GitHub.
+
+   (Extra Credit) Tag the master branch with this feature as "v1.1", then push to GitHub.
 
 	
 
-Solutions:
+Lesson 6: Visualizing the branching flow
+
+On a sheet of paper, draw a timeline of your branching and commit workflow, similar to "The GitHub Flow" image here:
+
+	https://www.endpoint.com/blog/2014/05/02/git-workflows-that-work
+
+
+
+
 
 
 
