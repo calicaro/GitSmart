@@ -1,0 +1,2 @@
+This is an installation routine to create a t2.micro Linux instance on AWS to execute the tutorial.   Note that an SSH client (e.g. Putty) is required to access the target Linux instance and run the tutorial.  Ensure that the AWS CLI is available and the "aws configure" setup command has been run.  Read through the "install" program and run it.
+

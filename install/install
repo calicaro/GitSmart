@@ -1,0 +1,90 @@
+#!/bin/bash
+
+# Make sure to set the path to the AWS CLI 
+export PATH=$PATH:~/.local/bin
+
+
+ec2_instance_name=gitsmart1442
+cloudformation_template=./cloudformation.yaml
+aws_ec2_access_key_name=ec2_key_gitsmart4
+aws_ec2_access_keyfile_name=./gitsmart4.pem
+aws_cloudformation_stack_name=cf-gitsmart-stack02
+ec2_instance_ssh_username=ec2-user
+
+validate_aws_cli() {
+  if [ `aws ec2 describe-regions | grep "us-east" | wc -l` -lt 2 ]; then
+    echo -e "\n\n [`basename "$0"`] Error: Could not find the AWS cli command <aws> in path \n\n"
+    exit 1
+  else
+    return 0
+  fi 
+}
+
+
+# 
+#  Use this routine to create an EC2 access key.  This presumes that the "create-key-pair" command returns json formatted data.
+#
+create_ec2_access_key() {
+  # Create the key in AWS
+  aws ec2 create-key-pair --key-name $aws_ec2_access_key_name --output text> $aws_ec2_access_keyfile_name.tmp
+  
+  # For some reason these always need to be trimmed, or else SSH thinks it's an encrypted private key due to the extra characters
+  cat $aws_ec2_access_keyfile_name.tmp  | sed 's/-----BEGIN/\n-----BEGIN/g' | sed 's/END RSA PRIVATE KEY-----/END RSA PRIVATE KEY-----\n/g' | head -24 | tail -23 > $aws_ec2_access_keyfile_name
+  chmod go-rwx $aws_ec2_access_keyfile_name
+
+  # Validate
+  if [ ` ssh-keygen -f $aws_ec2_access_keyfile_name  -y | grep ssh-rsa | wc -l` -gt 0 ]; then
+    rm $aws_ec2_access_keyfile_name.tmp
+    echo -e  "\n\n [`basename "$0"`] Success: Created key pair "$aws_ec2_access_key_name" ($aws_ec2_access_keyfile_name) \n\n"
+  else 
+     echo -e "\n\n [`basename "$0"`] Error: The file <$aws_ec2_access_keyfile_name.tmp> failed validation \n\n"
+  fi
+}
+
+get_ec2_instance_public_ip_address() {
+  instance_name=$1
+
+  ip_address=`aws ec2 describe-instances --filters "Name=tag-value,Values=$instance_name" --query Reservations[0].Instances[0].PublicIpAddress | sed 's/\"//g'`
+  if [ x$ip_address == xnull ] ||  [ x$ip_address == x ]; then
+    echo "ERROR: get_instance_public_ip_address(): Could not retrieve an ip address for instance: [$instance_name]"
+    exit 1
+  fi
+  echo $ip_address
+}
+
+
+
+
+create_ec2_instance() {
+  if ! validate_aws_cli; then 
+    echo -e "\n\n [`basename "$0"`] Error: Could not validate the AWS EC2 CLI.  Validate that the "aws" command is in the current PATH. \n\n"
+  fi
+  if [ ! -r $cloudformation_template ]; then
+    echo -e "\n\n [`basename "$0"`] Error: Could not validate the cloudformation template <$cloudformation_template> \n\n"
+    exit 2 
+  fi
+  if [ ! -r $aws_ec2_access_keyfile_name ]; then
+    echo -e "\n\n [`basename "$0"`] Error: Could not validate the EC2 keyfilename <$aws_ec2_access_keyfile_name>.  Update the install shell script with the appropriate EC2 access key and key file name to create and access the <$ec2_instance_name> instance. \n\n"
+    exit 3
+  fi
+  aws_cloudformation_create_stack_command=`echo aws cloudformation create-stack --stack-name $aws_cloudformation_stack_name --template-body "file://$cloudformation_template" --parameters ParameterKey=KeyName,ParameterValue=$aws_ec2_access_key_name ParameterKey=InstanceName,ParameterValue=$ec2_instance_name`
+  $aws_cloudformation_create_stack_command
+
+  echo -e "\n\nCreating the AWS cloudformation stack with command: $aws_cloudformation_create_stack_command \n\n"
+
+  sleep 5
+ 
+  # Note that if this were something other than a t2.micro instance, we should block here until the instance state is "Running"
+
+  ip_address_of_ec2_instance=`get_ec2_instance_public_ip_address $ec2_instance_name`
+
+  echo -e "\n\n  [`basename "$0"`] Use "ssh $ec2_instance_ssh_username@$ip_address_of_ec2_instance to access the EC2 target instance.  The GIT repository has been cloned to /home/$ec2_instance_ssh_username/GitSmart \n\n"
+}
+
+delete_ec2_instance() {
+  aws cloudformation delete-stack --stack-name $aws_cloudformation_stack_name
+}
+
+#create_ec2_access_key
+create_ec2_instance
+#delete_ec2_instance
