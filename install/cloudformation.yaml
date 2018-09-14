@@ -51,6 +51,29 @@ Resources:
       - 
         Key: "Foo"
         Value: "Bar"
+      UserData:
+        Fn::Base64: !Sub |     # No more Fn::Join needed
+          #!/bin/bash
+          # Note to user that this will log to /var/log/cloud-init-output.log
+          yum install -y git java-1.8.0-devel
+          yum remove -y java-1.7.0-openjdk
+          # Unfortunately this Maven package will re-install JDK 1.7, so we'll abandon it.... (leaving it here for reference)
+          #wget http://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo -O /etc/yum.repos.d/epel-apache-maven.repo
+          #sed -i s/\$releasever/6/g /etc/yum.repos.d/epel-apache-maven.repo
+          #export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk.x86_64
+          #sudo -u ec2-user /bin/touch /home/ec2-user/.bashrc
+          #echo "export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk.x86_64" >> /home/ec2-user/.bashrc
+          #echo 'PATH=/usr/lib/jvm/java-1.8.0-openjdk.x86_64/bin/:$PATH' >> /home/ec2-user/.bashrc
+          #yum install -y apache-maven
+          # ... and use the manual approach
+          /usr/bin/curl -O http://us.mirrors.quenda.co/apache/maven/maven-3/3.5.4/binaries/apache-maven-3.5.4-bin.zip
+          /bin/cp -f apache-maven-3.5.4-bin.zip /var/tmp
+          sudo -u ec2-user unzip /var/tmp/apache-maven-3.5.4-bin.zip -d /home/ec2-user/
+          sudo -u ec2-user /bin/touch /home/ec2-user/.bashrc
+          echo 'export PATH=/home/ec2-user/apache-maven-3.5.4/bin/:$PATH' >> /home/ec2-user/.bashrc
+          echo 'export MAVEN_HOME=/home/ec2-user/apache-maven-3.5.4' >>  /home/ec2-user/.bashrc
+          mvn --version
+          sudo -u ec2-user git clone https://github.com/cloudomatic/GitSmart /home/ec2-user/GitSmart
   InstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:

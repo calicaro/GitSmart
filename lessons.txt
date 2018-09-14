@@ -1,10 +1,10 @@
-You have responsibility for bug fixes and feature enhancements on  a program which executes a roommate matching program at a university.  The program is written in Java, uses the H2 SQL database, and uses Git for source control.  You are expected to respond to requests from different offices in the university and make updates to the program.  The program is intended to be as simple as possible, in the event that this tutorial is also an introduction to Java.  This tutorial is intended to be guided by an instructor who is familiar with the Git command line tool.
+You have responsibility for bug fixes and feature enhancements on a program which executes a roommate matching algorithm at a university.  The program is written in Java, uses the H2 SQL database, and uses Git for source control.  You are expected to respond to requests from different offices in the university and make updates to the program.  The program is intended to be as simple as possible, in the event that this tutorial is also an introduction to Java.  This tutorial is intended to be guided by an instructor who is familiar with the Git command line tool and can answer questions.
 
-Create an account on GitHub and fork this repository to begin.
+Create an account on GitHub and fork this repository to begin.  Note that the "install" folder contains a template to create an AWS Linux t2.micro instance with the required toolchain.
 
 Lesson 1) Clone a repository
 
-Clone the GitSmart project and review the program source code (StudentMatch.java and univeristy.ddl) and build StudentMatch.jar with:
+Clone the GitSmart project, review the program source code (StudentMatch.java and univeristy.ddl), and build StudentMatch.jar with:
 
 		mvn clean install -DskipTests
 
@@ -12,7 +12,7 @@ Run the StudentMatch.jar file with:
 
 		java -jar ./target/StudentMatch.jar
 
-You will see a list of options.  Study these options and compare them to classes and methods in the src folder.  
+You will see a list of options.  Study these options and compare them to classes and methods in the Java source files.
 
  Run the DDL to create the database via:
 
@@ -29,7 +29,7 @@ Lesson 2) Adding a feature to the program
 You have received a memo from Bro in the registrar's office stating the following:
 
  -----------------------------------------
- Dude,
+Dude,
 
    I think we might need a new feature to start tracking where students are from.  The Dean of Students says that two students from the same hometown should not share the same dorm room, so that the students learn about different parts of the country.  Here's everyone's hometown:
 
